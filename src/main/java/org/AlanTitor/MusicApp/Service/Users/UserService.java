@@ -37,7 +37,7 @@ public class UserService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    @CacheEvict(value = "allUsers")
+    @CacheEvict(value = {"allUsers", "oneUser"}, allEntries = true)
     public RegisterUserResponse registerUser(RegisterUserRequest request){
         if(userRepository.existsByEmail(request.getEmail())) {
             throw new UserDuplicateException();

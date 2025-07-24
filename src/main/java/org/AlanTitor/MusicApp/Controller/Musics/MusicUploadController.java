@@ -6,8 +6,10 @@ import org.AlanTitor.MusicApp.Dto.Musics.MusicUploadDto;
 import org.AlanTitor.MusicApp.Dto.Musics.ResponseMusicDataDto;
 import org.AlanTitor.MusicApp.Entity.Musics.Music;
 import org.AlanTitor.MusicApp.Service.Musics.MusicService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -41,13 +43,16 @@ public class MusicUploadController {
     @GetMapping
     public ResponseEntity<?> getAllMusic(){
         List<ResponseMusicDataDto> listOfMusic = musicService.getAllMusic();
+        if(listOfMusic.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().body(listOfMusic);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getMusicById(@PathVariable(name = "id") Long id){
         if (id <= 0){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
 
         ResponseMusicDataDto music = musicService.getMusicById(id);
@@ -56,6 +61,19 @@ public class MusicUploadController {
         }
 
         return ResponseEntity.ok().body(music);
+    }
+
+    @GetMapping(value = "/file/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> getMusicFileById(@PathVariable(name = "id") Long id) throws IOException {
+        try{
+            Resource file = musicService.getMusicFileById(id);
+            MediaType mediaType = MediaTypeFactory
+                    .getMediaType(file)
+                    .orElse(MediaType.APPLICATION_OCTET_STREAM);
+            return ResponseEntity.ok().contentType(mediaType).contentLength(file.contentLength()).body(file);
+        }catch (IOException exception){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // if file isn't presented in request param

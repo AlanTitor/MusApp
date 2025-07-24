@@ -3,7 +3,6 @@ package org.AlanTitor.MusicApp.Service.Musics;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -35,7 +34,7 @@ public class MusicFile {
             Files.createDirectory(uploadPath);
         }
 
-        File pathToTransfer = new File(uploadPath.toString(), this.fileName + ".mp3");
+        File pathToTransfer = new File(uploadPath.toString(), this.fileName);
         file.transferTo(pathToTransfer.toPath());
 
         return uploadPath;

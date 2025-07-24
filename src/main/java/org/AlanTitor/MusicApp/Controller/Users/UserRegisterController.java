@@ -27,13 +27,9 @@ public class UserRegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserRequest request, UriComponentsBuilder uriBuilder){
-        try{
-            RegisterUserResponse response = userService.registerUser(request);
-            URI uri = uriBuilder.path("api/user/register/{id}").buildAndExpand(response.getId()).toUri();
-            return ResponseEntity.created(uri).body(response);
-        }catch (UserDuplicateException e){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("Error", "Incorrect data!"));
-        }
+        RegisterUserResponse response = userService.registerUser(request);
+        URI uri = uriBuilder.path("api/user/register/{id}").buildAndExpand(response.getId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @GetMapping
@@ -64,5 +60,10 @@ public class UserRegisterController {
         exception.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return ResponseEntity.badRequest().body(errors);
+
+    }
+    @ExceptionHandler(UserDuplicateException.class)
+    public ResponseEntity<Map<String, String>> handleValidationErrors(UserDuplicateException exception){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("Error", "Incorrect data!"));
     }
 }
