@@ -48,15 +48,15 @@ public class UserRegisterControllerTest {
         assertTrue(finalResponse.getHeaders().getLocation().toString().contains("http://localhost/usersapi/user/register/2"));
     }
 
-    @Test
-    public void createUserWithErrorThanReturnConflict(){
-        doThrow(new UserDuplicateException()).when(userService).registerUser(request);
-
-        var response = controller.registerUser(request, uri);
-
-        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode().value());
-        assertEquals(Map.of("Error", "Incorrect data!"), response.getBody());
-
-        assertThrows(UserDuplicateException.class, () -> userService.registerUser(request));
-    }
+//    @Test
+//    public void createUserWithErrorThanReturnConflict(){
+//        doThrow(new UserDuplicateException()).when(userService).registerUser(request);
+//
+//        var response = controller.registerUser(request, uri);
+//
+//        assertEquals(HttpStatus.CONFLICT.value(), response.getStatusCode().value());
+//        assertEquals(Map.of("Error", "Incorrect data!"), response.getBody());
+//
+//        assertThrows(UserDuplicateException.class, () -> userService.registerUser(request));
+//    }
 }

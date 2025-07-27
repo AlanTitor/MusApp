@@ -43,9 +43,9 @@ public class MusicUploadController {
     @GetMapping
     public ResponseEntity<?> getAllMusic(){
         List<ResponseMusicDataDto> listOfMusic = musicService.getAllMusic();
-        if(listOfMusic.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
+//        if(listOfMusic.isEmpty()){
+//            return ResponseEntity.notFound().build();
+//        }
         return ResponseEntity.ok().body(listOfMusic);
     }
 

@@ -1,0 +1,31 @@
+spring:
+  profiles:
+    active: prod
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600s
+
+  jwt:
+    accessTokenExpiration: 900
+    refreshTokenExpiration: 7200
+
+  files:
+    path: tracks
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+server:
+  tomcat:
+    max-swallow-size: -1
+    max-http-form-post-size: -1
+    max-http-post-size: -1

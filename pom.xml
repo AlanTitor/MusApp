@@ -6,7 +6,7 @@
 
     <groupId>org.AlanTitor.MusicApp</groupId>
     <artifactId>MusicApp</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-MVP</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

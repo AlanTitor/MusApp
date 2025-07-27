@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import org.AlanTitor.MusicApp.Entity.Users.User;
 import org.AlanTitor.MusicApp.Repository.UserRepository;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -32,7 +31,7 @@ public class JwtService {
                 .add("name", user.getName())
                 .add("role", user.getRole())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * tokenExpiration))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * tokenExpiration))
                 .build();
 
         return new Jwt(claims, jwtConfig.generateSecretKey());
