@@ -18,7 +18,6 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory){
         JdkSerializationRedisSerializer jdk = new JdkSerializationRedisSerializer();
 
-
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 

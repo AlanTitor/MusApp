@@ -16,7 +16,7 @@ CREATE TABLE musics(
     path TEXT NOT NULL,
     file_size DECIMAL(10,1) NOT NULL,
     mime_type VARCHAR(20) NOT NULL,
-    date_created DATE DEFAULT (curdate()) NOT NULL,
+    date_created TIMESTAMP DEFAULT (now()) NOT NULL,
     author_id BIGINT NOT NULL,
     PRIMARY KEY(id),
     FOREIGN KEY(author_id) REFERENCES users(id)

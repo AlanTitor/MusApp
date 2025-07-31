@@ -1,5 +1,8 @@
 package org.AlanTitor.MusicApp.Controller.Musics;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import org.AlanTitor.MusicApp.Dto.Musics.MusicUploadDto;
@@ -7,6 +10,7 @@ import org.AlanTitor.MusicApp.Dto.Musics.ResponseMusicDataDto;
 import org.AlanTitor.MusicApp.Entity.Musics.Music;
 import org.AlanTitor.MusicApp.Service.Musics.MusicService;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -25,7 +30,7 @@ import java.util.Map;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/musics")
-public class MusicUploadController {
+public class MusicController {
 
     private final MusicService musicService;
 
@@ -43,9 +48,6 @@ public class MusicUploadController {
     @GetMapping
     public ResponseEntity<?> getAllMusic(){
         List<ResponseMusicDataDto> listOfMusic = musicService.getAllMusic();
-//        if(listOfMusic.isEmpty()){
-//            return ResponseEntity.notFound().build();
-//        }
         return ResponseEntity.ok().body(listOfMusic);
     }
 
@@ -73,6 +75,16 @@ public class MusicUploadController {
             return ResponseEntity.ok().contentType(mediaType).contentLength(file.contentLength()).body(file);
         }catch (IOException exception){
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PatchMapping(path = "/edit/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> patchMusicMetaData(@PathVariable(name = "id") Long id, @RequestBody JsonPatch request){
+        try {
+            musicService.patchMusicMetaData(id, request);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (JsonPatchException | IOException e) {
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
     }
 

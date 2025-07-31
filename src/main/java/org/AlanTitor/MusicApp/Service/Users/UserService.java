@@ -37,7 +37,7 @@ public class UserService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    @CacheEvict(value = {"allUsers", "oneUser"}, allEntries = true)
+    @CacheEvict(value = {"user"}, allEntries = true)
     public RegisterUserResponse registerUser(RegisterUserRequest request){
         if(userRepository.existsByEmail(request.getEmail())) {
             throw new UserDuplicateException();
@@ -50,7 +50,6 @@ public class UserService {
         userRepository.save(user);
         return userMapper.toResponse(user);
     }
-
 
     public LoginUserResponse loginUser(LoginUserRequest request){
         authenticationManager.authenticate(
@@ -76,12 +75,12 @@ public class UserService {
         return jwtService.generateAccessToken(user);
     }
 
-    @Cacheable(value = "allUsers")
+    @Cacheable(value = "user")
     public List<ResponseUserDataDto> getAllUsers(){
         List<User> users = userRepository.getAllUsersWithMusic();
         return users.stream().map(userMapper::toDtoWithMusic).toList();
     }
-    @Cacheable(value = "oneUser")
+    @Cacheable(value = "user", key = "#id")
     public ResponseUserDataDto getUserById(Long id){
         User user = userRepository.getOneUsersWithMusicById(id).orElse(null);
         return userMapper.toDtoWithMusic(user);
