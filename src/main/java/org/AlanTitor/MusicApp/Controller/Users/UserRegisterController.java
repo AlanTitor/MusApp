@@ -41,7 +41,7 @@ public class UserRegisterController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable(name = "id") Long id){
         if (id <= 0){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
 
         ResponseUserDataDto user = userService.getUserById(id);

@@ -8,18 +8,19 @@ import lombok.AllArgsConstructor;
 import org.AlanTitor.MusicApp.Dto.Musics.MusicUploadDto;
 import org.AlanTitor.MusicApp.Dto.Musics.ResponseMusicDataDto;
 import org.AlanTitor.MusicApp.Entity.Musics.Music;
+import org.AlanTitor.MusicApp.Exception.MusicNotFoundException;
 import org.AlanTitor.MusicApp.Service.Musics.MusicService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -67,6 +68,9 @@ public class MusicController {
 
     @GetMapping(value = "/file/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<Resource> getMusicFileById(@PathVariable(name = "id") Long id) throws IOException {
+        if (id <= 0){
+            return ResponseEntity.badRequest().build();
+        }
         try{
             Resource file = musicService.getMusicFileById(id);
             MediaType mediaType = MediaTypeFactory
@@ -78,14 +82,22 @@ public class MusicController {
         }
     }
 
-    @PatchMapping(path = "/edit/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> patchMusicMetaData(@PathVariable(name = "id") Long id, @RequestBody JsonPatch request){
-        try {
-            musicService.patchMusicMetaData(id, request);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (JsonPatchException | IOException e) {
-            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+    @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> patchMusicMetaData(@PathVariable(name = "id") Long id, @RequestBody JsonPatch request) throws JsonPatchException, IOException {
+        if (id <= 0){
+            return ResponseEntity.badRequest().build();
         }
+        musicService.patchMusicMetaData(id, request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMusic(@PathVariable(name = "id") Long id) throws IOException {
+        if (id <= 0){
+            return ResponseEntity.badRequest().build();
+        }
+        musicService.deleteMusic(id);
+        return ResponseEntity.ok().build();
     }
 
     // if file isn't presented in request param
@@ -99,5 +111,21 @@ public class MusicController {
         Map<String, String> errors = new HashMap<>();
         exception.getConstraintViolations().forEach(error -> errors.put("Message:", error.getMessage()));
         return ResponseEntity.badRequest().body(errors);
+    }
+    // if music in DB is absent
+    @ExceptionHandler(MusicNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleMusicNotFound(){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", "Can't find music!"));
+    }
+    // if file in File System is absent
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<Map<String, String>> handleMusicIOEx(IOException exception){
+        return ResponseEntity.internalServerError().build();
+    }
+    // if user have no permission
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAuthorizationEx(AuthorizationDeniedException exception){
+        Map<String, String> errors = new HashMap<>();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Error", exception.getMessage()));
     }
 }
