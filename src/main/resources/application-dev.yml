@@ -3,17 +3,17 @@ spring:
     show-sql: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/musicservice?createDatabaseIfNotExist=true
-    username: root
-    password: 1515
+    url: jdbc:mysql://${SPRING_DATASOURCE_HOST}:${SPRING_DATASOURCE_PORT}/${SPRING_DATASOURCE_NAME}?createDatabaseIfNotExist=true
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
 
   jwt:
-    key: 688787d8ff144c502c7f5cffaafe2cc588d86079f9de88304c26b0cb99ce91c6
+    key: ${SPRING_JWT_KEY}
 
 server:
   error:

@@ -39,3 +39,6 @@ build/
 .DS_Store
 
 /tracks
+
+.env
+.env.prod
