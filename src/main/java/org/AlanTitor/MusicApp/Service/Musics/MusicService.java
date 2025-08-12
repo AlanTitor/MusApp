@@ -11,8 +11,8 @@ import org.AlanTitor.MusicApp.Dto.Musics.MusicUploadDto;
 import org.AlanTitor.MusicApp.Dto.Musics.ResponseMusicDataDto;
 import org.AlanTitor.MusicApp.Entity.Musics.Music;
 import org.AlanTitor.MusicApp.Entity.Users.User;
-import org.AlanTitor.MusicApp.Exception.IncorrectFileData;
-import org.AlanTitor.MusicApp.Exception.MusicNotFoundException;
+import org.AlanTitor.MusicApp.Exception.CustomExceptions.IncorrectFileData;
+import org.AlanTitor.MusicApp.Exception.CustomExceptions.MusicNotFoundException;
 import org.AlanTitor.MusicApp.Mapper.MusicMapper;
 import org.AlanTitor.MusicApp.Repository.MusicRepository;
 import org.AlanTitor.MusicApp.Service.Users.UserService;
@@ -24,7 +24,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 

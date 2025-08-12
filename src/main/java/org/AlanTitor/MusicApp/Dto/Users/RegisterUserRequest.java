@@ -13,7 +13,7 @@ import lombok.*;
 public class RegisterUserRequest {
 
     @NotBlank(message = "Name can't be blank.")
-    @Size(min = 3, max = 50, message = "Name must be less 50 characters.")
+    @Size(min = 3, max = 50, message = "Name must be bigger than 3 and less 50 characters.")
     private String name;
 
     @NotBlank(message = "Email can't be blank.")

@@ -14,3 +14,11 @@ spring:
 
   jwt:
     key: 688787d8ff144c502c7f5cffaafe2cc588d86079f9de88304c26b0cb99ce91c6
+
+server:
+  error:
+    whitelabel:
+      enabled: true
+    include-stacktrace: always
+    include-message: always
+    include-binding-errors: always

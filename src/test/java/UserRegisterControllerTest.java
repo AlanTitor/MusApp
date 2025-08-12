@@ -1,7 +1,6 @@
 import org.AlanTitor.MusicApp.Controller.Users.UserRegisterController;
 import org.AlanTitor.MusicApp.Dto.Users.RegisterUserRequest;
 import org.AlanTitor.MusicApp.Dto.Users.RegisterUserResponse;
-import org.AlanTitor.MusicApp.Exception.UserDuplicateException;
 import org.AlanTitor.MusicApp.Service.Users.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,8 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doThrow;

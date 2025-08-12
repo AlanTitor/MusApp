@@ -3,12 +3,22 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST}
       port: ${SPRING_DATA_REDIS_PORT}
+
   jwt:
     key: ${SPRING_JWT_KEY}
+
   files:
     path: tracks
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never

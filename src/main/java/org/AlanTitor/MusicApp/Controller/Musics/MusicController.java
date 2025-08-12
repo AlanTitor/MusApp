@@ -1,31 +1,24 @@
 package org.AlanTitor.MusicApp.Controller.Musics;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import org.AlanTitor.MusicApp.Dto.Musics.MusicUploadDto;
 import org.AlanTitor.MusicApp.Dto.Musics.ResponseMusicDataDto;
 import org.AlanTitor.MusicApp.Entity.Musics.Music;
-import org.AlanTitor.MusicApp.Exception.MusicNotFoundException;
 import org.AlanTitor.MusicApp.Service.Musics.MusicService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @AllArgsConstructor
@@ -98,34 +91,5 @@ public class MusicController {
         }
         musicService.deleteMusic(id);
         return ResponseEntity.ok().build();
-    }
-
-    // if file isn't presented in request param
-    @ExceptionHandler(MissingServletRequestPartException.class)
-    public ResponseEntity<Map<String, String>> handleNotFoundException(){
-        return ResponseEntity.badRequest().body(Map.of("Error", "File is not present!"));
-    }
-    // if name or genre isn't presented in request param
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(ConstraintViolationException exception){
-        Map<String, String> errors = new HashMap<>();
-        exception.getConstraintViolations().forEach(error -> errors.put("Message:", error.getMessage()));
-        return ResponseEntity.badRequest().body(errors);
-    }
-    // if music in DB is absent
-    @ExceptionHandler(MusicNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleMusicNotFound(){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", "Can't find music!"));
-    }
-    // if file in File System is absent
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<Map<String, String>> handleMusicIOEx(IOException exception){
-        return ResponseEntity.internalServerError().build();
-    }
-    // if user have no permission
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<Map<String, String>> handleAuthorizationEx(AuthorizationDeniedException exception){
-        Map<String, String> errors = new HashMap<>();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Error", exception.getMessage()));
     }
 }

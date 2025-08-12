@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.AlanTitor.MusicApp.Dto.Users.*;
 import org.AlanTitor.MusicApp.Entity.Users.Role;
 import org.AlanTitor.MusicApp.Entity.Users.User;
-import org.AlanTitor.MusicApp.Exception.UserDuplicateException;
+import org.AlanTitor.MusicApp.Exception.CustomExceptions.UserDuplicateException;
 import org.AlanTitor.MusicApp.Jwt.Jwt;
 import org.AlanTitor.MusicApp.Jwt.JwtService;
 import org.AlanTitor.MusicApp.Mapper.UserMapper;

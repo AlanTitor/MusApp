@@ -5,18 +5,13 @@ import lombok.AllArgsConstructor;
 import org.AlanTitor.MusicApp.Dto.Users.RegisterUserRequest;
 import org.AlanTitor.MusicApp.Dto.Users.RegisterUserResponse;
 import org.AlanTitor.MusicApp.Dto.Users.ResponseUserDataDto;
-import org.AlanTitor.MusicApp.Exception.UserDuplicateException;
 import org.AlanTitor.MusicApp.Service.Users.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 @RestController
@@ -50,20 +45,5 @@ public class UserRegisterController {
         }
 
         return ResponseEntity.ok().body(user);
-    }
-
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException exception){
-        Map<String, String> errors = new HashMap<>();
-
-        exception.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-
-        return ResponseEntity.badRequest().body(errors);
-
-    }
-    @ExceptionHandler(UserDuplicateException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(UserDuplicateException exception){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("Error", "Incorrect data!"));
     }
 }
