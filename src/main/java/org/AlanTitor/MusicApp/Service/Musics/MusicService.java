@@ -15,6 +15,8 @@ import org.AlanTitor.MusicApp.Exception.CustomExceptions.IncorrectFileData;
 import org.AlanTitor.MusicApp.Exception.CustomExceptions.MusicNotFoundException;
 import org.AlanTitor.MusicApp.Mapper.MusicMapper;
 import org.AlanTitor.MusicApp.Repository.MusicRepository;
+import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileMetadataService;
+import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileStorageServiceImpl;
 import org.AlanTitor.MusicApp.Service.Users.UserService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -45,31 +47,20 @@ public class MusicService {
 
     private final MusicMapper musicMapper;
     private final UserService userService;
-    private final MusicConfig musicConfig;
 
-    private final ResourceLoader resourceLoader;
+    private final FileStorageServiceImpl fileStorageService;
+    private final FileMetadataService fileMetadataService;
 
 
     private final ObjectMapper objectMapper;
 
     @CacheEvict(value = {"music", "user"}, allEntries = true)
-    public Music uploadMusic(@Valid MusicUploadDto musicUploadDto, MultipartFile multFile) throws IOException {
+    public Music uploadMusic(@Valid MusicUploadDto musicUploadDto, MultipartFile file) throws IOException {
+        if(!fileStorageService.isValidAudioFile(file)) throw new IncorrectFileData();
         User user = userService.getCurrantUser();
-        MusicFile musicFile = new MusicFile(multFile, musicConfig.getPath());
-
-        if(!musicFile.isValidAudioFile()){
-            throw new IncorrectFileData();
-        }
-
         Music music = musicMapper.toEntity(musicUploadDto);
-        musicMapper.setFileProperties(music, multFile, musicUploadDto);
-
-        musicFile.setFileName(music.getName());
-        music.setFilePath(musicFile.moveFile().toString());
-
-        //set currant user is authored
-        music.setAuthorId(user);
-
+        Path savedMusicPath = fileStorageService.store(file, musicUploadDto.getName());
+        fileMetadataService.setFileProperties(music, file, musicUploadDto, savedMusicPath, user);
         return musicRepository.save(music);
     }
 
@@ -89,13 +80,7 @@ public class MusicService {
 
     public Resource getMusicFileById(Long id) throws IOException {
         Music music = musicRepository.findById(id).orElseThrow(MusicNotFoundException::new);
-        String path = "file:" + createPathWindows(music.getFilePath(), music.getName());
-        Resource file = resourceLoader.getResource(path);
-
-        if(!file.exists() || !file.isReadable()){
-            throw new IOException("Can not send file!");
-        }
-        return file;
+        return fileStorageService.loadAsResource(music.getFilePath(), music.getName());
     }
 
     @Caching(
