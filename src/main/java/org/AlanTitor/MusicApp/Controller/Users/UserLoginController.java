@@ -9,6 +9,7 @@ import org.AlanTitor.MusicApp.Entity.Users.User;
 import org.AlanTitor.MusicApp.Jwt.Jwt;
 import org.AlanTitor.MusicApp.Jwt.JwtConfig;
 import org.AlanTitor.MusicApp.Jwt.JwtResponse;
+import org.AlanTitor.MusicApp.Service.Users.UserAuthorizationServiceImpl;
 import org.AlanTitor.MusicApp.Service.Users.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 public class UserLoginController {
 
     private final UserService userService;
+    private final UserAuthorizationServiceImpl userAuthorizationService;
+
     private final JwtConfig jwtConfig;
 
     @PostMapping("/login")
@@ -46,7 +49,7 @@ public class UserLoginController {
 
     @GetMapping("/me")
     public boolean getMe(){
-        User user = userService.getCurrantUser();
+        User user = userAuthorizationService.getCurrantUser();
 
         return user != null;
     }

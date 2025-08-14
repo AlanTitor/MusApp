@@ -17,13 +17,13 @@ import org.AlanTitor.MusicApp.Mapper.MusicMapper;
 import org.AlanTitor.MusicApp.Repository.MusicRepository;
 import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileMetadataService;
 import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileStorageServiceImpl;
+import org.AlanTitor.MusicApp.Service.Users.UserAuthorizationServiceImpl;
 import org.AlanTitor.MusicApp.Service.Users.UserService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -46,18 +46,18 @@ public class MusicService {
     private final MusicRepository musicRepository;
 
     private final MusicMapper musicMapper;
-    private final UserService userService;
 
     private final FileStorageServiceImpl fileStorageService;
     private final FileMetadataService fileMetadataService;
 
+    private final UserAuthorizationServiceImpl userAuthorizationService;
 
     private final ObjectMapper objectMapper;
 
     @CacheEvict(value = {"music", "user"}, allEntries = true)
     public Music uploadMusic(@Valid MusicUploadDto musicUploadDto, MultipartFile file) throws IOException {
         if(!fileStorageService.isValidAudioFile(file)) throw new IncorrectFileData();
-        User user = userService.getCurrantUser();
+        User user = userAuthorizationService.getCurrantUser();
         Music music = musicMapper.toEntity(musicUploadDto);
         Path savedMusicPath = fileStorageService.store(file, musicUploadDto.getName());
         fileMetadataService.setFileProperties(music, file, musicUploadDto, savedMusicPath, user);
@@ -88,7 +88,7 @@ public class MusicService {
             evict = @CacheEvict(value = {"music", "user"}, allEntries = true)
     )
     public void patchMusicMetaData(Long id, JsonPatch patch) throws JsonPatchException, IOException {
-        User user = userService.getCurrantUser();
+        User user = userAuthorizationService.getCurrantUser();
         Music music = musicRepository.getMusicById(id).orElseThrow(MusicNotFoundException::new);
 
         if(!(user == music.getAuthorId())){
@@ -138,25 +138,9 @@ public class MusicService {
 
     @CacheEvict(key = "#id", value = {"music", "user"}, allEntries = true)
     public void deleteMusic(Long id) throws IOException {
-        User user = userService.getCurrantUser();
+        User user = userAuthorizationService.getCurrantUser();
         Music music = musicRepository.getMusicById(id).orElseThrow(MusicNotFoundException::new);
-
-        if(!(user == music.getAuthorId())){
-            throw new AuthorizationDeniedException("You can't delete this song!");
-        }
-
-        File musicFile = new File(music.getFilePath(), music.getName());
-
-        if(!musicFile.exists()){
-            throw new FileNotFoundException();
-        }
-
-        Files.deleteIfExists(musicFile.toPath());
-
+        fileStorageService.delete(music);
         musicRepository.deleteById(id);
-    }
-
-    private Path createPathWindows(String filePath, String fileName){
-        return Path.of(filePath, fileName);
     }
 }

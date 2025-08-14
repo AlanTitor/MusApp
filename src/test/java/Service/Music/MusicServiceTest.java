@@ -7,12 +7,10 @@ import org.AlanTitor.MusicApp.Entity.Users.User;
 import org.AlanTitor.MusicApp.Exception.CustomExceptions.IncorrectFileData;
 import org.AlanTitor.MusicApp.Mapper.MusicMapper;
 import org.AlanTitor.MusicApp.Repository.MusicRepository;
-import org.AlanTitor.MusicApp.Repository.UserRepository;
 import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileMetadataService;
 import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileStorageServiceImpl;
-import org.AlanTitor.MusicApp.Service.Musics.MusicConfig;
 import org.AlanTitor.MusicApp.Service.Musics.MusicService;
-import org.AlanTitor.MusicApp.Service.Users.UserService;
+import org.AlanTitor.MusicApp.Service.Users.UserAuthorizationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +25,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +39,7 @@ public class MusicServiceTest {
     private MusicRepository musicRepository;
 
     @Mock
-    private UserService userService;
+    private UserAuthorizationServiceImpl userAuthorizationService;
 
     @Mock
     private FileStorageServiceImpl fileStorageService;
@@ -67,7 +67,7 @@ public class MusicServiceTest {
         MusicUploadDto dto = new MusicUploadDto("burn", "rock");
         MockMultipartFile file = new MockMultipartFile("burn", "linkinPark.mp3", "audio/mpeg", "bytes".getBytes());
 
-        Mockito.when(userService.getCurrantUser()).thenReturn(user);
+        Mockito.when(userAuthorizationService.getCurrantUser()).thenReturn(user);
         Mockito.when(musicMapper.toEntity(dto)).thenReturn(music);
         Mockito.when(fileStorageService.isValidAudioFile(file)).thenReturn(true);
         Mockito.when(fileStorageService.store(file, "burn")).thenReturn(Path.of("tracks/burn.mp3"));
@@ -102,7 +102,7 @@ public class MusicServiceTest {
         MockMultipartFile file = new MockMultipartFile("burn", "linkinPark.mp3", "audio/mpeg", "bytes".getBytes());
 
         Mockito.when(fileStorageService.isValidAudioFile(file)).thenReturn(true);
-        Mockito.when(userService.getCurrantUser()).thenReturn(user);
+        Mockito.when(userAuthorizationService.getCurrantUser()).thenReturn(user);
         Mockito.when(musicMapper.toEntity(dto)).thenReturn(music);
         Mockito.when(fileStorageService.store(file, "burn")).thenThrow(new IOException("Full disk"));
 

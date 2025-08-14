@@ -14,7 +14,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +30,6 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public User getCurrantUser(){
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        var userId = (Long) authentication.getPrincipal();
-        return userRepository.findById(userId).orElse(null);
-    }
 
     @CacheEvict(value = {"user"}, allEntries = true)
     public RegisterUserResponse registerUser(RegisterUserRequest request){

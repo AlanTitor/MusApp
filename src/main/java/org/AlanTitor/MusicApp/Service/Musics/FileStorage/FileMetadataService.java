@@ -10,13 +10,13 @@ import java.nio.file.Path;
 
 @Service
 public class FileMetadataService {
-
+    // Set meta data to our music entity
     public void setFileProperties(Music music, MultipartFile file, MusicUploadDto musicUploadDto, Path path, User user){
         if(file != null){
             music.setFileExtension(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")));
             music.setName(musicUploadDto.getName() + music.getFileExtension());
             music.setFileName(file.getOriginalFilename());
-            music.setFileSize(file.getSize() / 1024 / 1024);
+            music.setFileSize(file.getSize() / 1024 / 1024); // file size in Megabytes
             music.setMimeType(file.getContentType());
             music.setFilePath(path.toString());
             music.setAuthorId(user);
