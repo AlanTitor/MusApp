@@ -30,7 +30,6 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-
     @CacheEvict(value = {"user"}, allEntries = true)
     public RegisterUserResponse registerUser(RegisterUserRequest request){
         if(userRepository.existsByEmail(request.getEmail())) {

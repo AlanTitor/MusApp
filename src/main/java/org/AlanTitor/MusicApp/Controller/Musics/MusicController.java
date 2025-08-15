@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,6 +29,7 @@ public class MusicController {
 
     private final MusicService musicService;
 
+    @Async
     @PostMapping
     public ResponseEntity<?> uploadMusic(@RequestParam("name") String name, @RequestParam("genre") String genre, @RequestParam("file") MultipartFile file) throws IOException {
         Music music = musicService.uploadMusic(new MusicUploadDto(name, genre), file);
@@ -39,12 +41,14 @@ public class MusicController {
         return ResponseEntity.created(locationUri).build();
     }
 
+    @Async
     @GetMapping
     public ResponseEntity<?> getAllMusic(){
         List<ResponseMusicDataDto> listOfMusic = musicService.getAllMusic();
         return ResponseEntity.ok().body(listOfMusic);
     }
 
+    @Async
     @GetMapping("/{id}")
     public ResponseEntity<?> getMusicById(@PathVariable(name = "id") Long id){
         if (id <= 0){
@@ -59,6 +63,7 @@ public class MusicController {
         return ResponseEntity.ok().body(music);
     }
 
+    @Async
     @GetMapping(value = "/file/{id}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<Resource> getMusicFileById(@PathVariable(name = "id") Long id) throws IOException {
         if (id <= 0){
@@ -75,6 +80,7 @@ public class MusicController {
         }
     }
 
+    @Async
     @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> patchMusicMetaData(@PathVariable(name = "id") Long id, @RequestBody JsonPatch request) throws JsonPatchException, IOException {
         if (id <= 0){
@@ -84,6 +90,7 @@ public class MusicController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Async
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMusic(@PathVariable(name = "id") Long id) throws IOException {
         if (id <= 0){

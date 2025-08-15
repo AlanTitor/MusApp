@@ -18,7 +18,6 @@ import org.AlanTitor.MusicApp.Repository.MusicRepository;
 import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileMetadataService;
 import org.AlanTitor.MusicApp.Service.Musics.FileStorage.FileStorageServiceImpl;
 import org.AlanTitor.MusicApp.Service.Users.UserAuthorizationServiceImpl;
-import org.AlanTitor.MusicApp.Service.Users.UserService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
