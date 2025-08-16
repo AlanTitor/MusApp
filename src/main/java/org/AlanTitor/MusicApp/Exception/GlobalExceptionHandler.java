@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -72,7 +73,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleMusicNotFound(){
         ErrorResponseDto error = new ErrorResponseDto(
                 "Not found",
-                "Can't find music in db.",
+                "Can't find music.",
                 HttpStatus.NOT_FOUND.value()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -89,11 +90,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.internalServerError().body(error);
     }
 
+    // if file in File System already exists
+    @ExceptionHandler(FileAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleExistFileEx(FileAlreadyExistsException exception){
+        String errorMessage = exception.getMessage();
+        ErrorResponseDto error = new ErrorResponseDto(
+                "Conflict",
+                errorMessage,
+                HttpStatus.CONFLICT.value()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     // if user have no permission
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorResponseDto> handleAuthorizationEx(AuthorizationDeniedException exception){
         ErrorResponseDto error = new ErrorResponseDto(
-                "Internal server error",
+                "Unauthorized",
                 exception.getMessage(),
                 HttpStatus.UNAUTHORIZED.value()
         );

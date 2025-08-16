@@ -25,11 +25,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,7 +63,7 @@ public class MusicServiceTest {
     }
 
     @Test
-    public void shouldUploadFileAndSaveInDb() throws IOException {
+    public void shouldUploadFileAndSaveInDb() throws IOException, ExecutionException, InterruptedException {
         MusicUploadDto dto = new MusicUploadDto("burn", "rock");
         MockMultipartFile file = new MockMultipartFile("burn", "linkinPark.mp3", "audio/mpeg", "bytes".getBytes());
 
